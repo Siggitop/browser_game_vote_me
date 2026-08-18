@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<title>Plakat-Einsatz – Ines Anna Bräuer</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  background: #11151d;
+  color: #f2f2f2;
+
+  font-family: monospace;
+
+  touch-action: none;
+  overscroll-behavior: none;
+
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button {
+  font: inherit;
+
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+
+  touch-action: none;
+}
+
+#app {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 8px;
+}
+
+#stage {
+  position: relative;
+  width: min(480px, calc(100vw - 16px));
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+
+#hud {
+  height: 50px;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  background: #0d1016;
+
+  border: 3px solid #3a4052;
+  border-bottom: none;
+
+  font-size: 8px;
+  line-height: 1.35;
+
+  text-align: center;
+}
+
+#hud .val {
+  color: #ffd23f;
+  font-size: 11px;
+}
+
+/* =========================================================
+   GAME
+========================================================= */
+
+canvas {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  background: #69b85b;
+
+  border-left: 3px solid #3a4052;
+  border-right: 3px solid #3a4052;
+
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+#controls {
+  height: 126px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px;
+
+  background: #0d1016;
+
+  border: 3px solid #3a4052;
+  border-top: none;
+
+  gap: 10px;
+}
+
+#dpad {
+  width: 135px;
+  height: 135px;
+
+  display: grid;
+
+  grid-template-columns: 44px 44px 44px;
+  grid-template-rows: 44px 44px 44px;
+
+  gap: 2px;
+
+  align-content: center;
+}
+
+#dpad button {
+  background: #2a3041;
+
+  border: 2px solid #555f7d;
+
+  color: white;
+
+  border-radius: 7px;
+
+  font-size: 15px;
+
+  padding: 0;
+}
+
+#dpad button.active {
+  background: #ffd23f;
+  color: #11151d;
+  border-color: white;
+}
+
+#btn-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+#btn-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#btn-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+#btn-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+#btn-action {
+  width: 100px;
+  height: 100px;
+
+  border-radius: 50%;
+
+  background: #d93f46;
+
+  border: 3px solid #ffb4b4;
+
+  color: white;
+
+  font-size: 9px;
+  line-height: 1.35;
+
+  padding: 0;
+}
+
+#btn-action.active {
+  background: #ffd23f;
+  color: #11151d;
+}
+
+/* =========================================================
+   OVERLAYS
+========================================================= */
+
+.overlay {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  top: 50px;
+  bottom: 126px;
+
+  z-index: 10;
+
+  background: rgba(8, 10, 15, 0.95);
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 18px;
+
+  gap: 9px;
+}
+
+.overlay h1 {
+  margin: 0;
+
+  color: #ffd23f;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+.overlay h2 {
+  margin: 0;
+
+  color: #82d4ff;
+
+  font-size: 9px;
+}
+
+.overlay p,
+.overlay li {
+  color: #ddd;
+
+  font-size: 7px;
+
+  line-height: 1.8;
+}
+
+.overlay ul {
+  text-align: left;
+
+  margin: 3px 0;
+
+  padding-left: 18px;
+}
+
+.overlay button {
+  margin-top: 7px;
+
+  background: #48a957;
+
+  color: #071009;
+
+  border: 3px solid #8cf09d;
+
+  border-radius: 6px;
+
+  padding: 13px 18px;
+
+  font-size: 9px;
+}
+
+.overlay button:active {
+  background: #ffd23f;
+}
+
+.badge {
+  padding: 8px 14px;
+
+  background: #252b3a;
+
+  border: 2px solid #59637e;
+
+  color: #ffd23f;
+
+  font-size: 16px;
+}
+
+.hidden {
+  display: none !important;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div id="stage">
+
+<!-- =======================================================
+     HUD
+======================================================= -->
+
+<div id="hud">
+
+  <span>
+    ZEIT<br>
+    <b class="val" id="hud-time">90</b>s
+  </span>
+
+  <span>
+    PUNKTE<br>
+    <b class="val" id="hud-score">0</b>
+  </span>
+
+  <span>
+    PLAKATE<br>
+    <b class="val" id="hud-posters">3/3</b>
+  </span>
+
+  <span>
+    HIGHSCORE<br>
+    <b class="val" id="hud-high">0</b>
+  </span>
+
+</div>
+
+<!-- =======================================================
+     GAME CANVAS
+======================================================= -->
+
+<canvas
+  id="game"
+  width="480"
+  height="300">
+</canvas>
+
+<!-- =======================================================
+     CONTROLS
+======================================================= -->
+
+<div id="controls">
+
+  <div id="dpad">
+
+    <button id="btn-up">▲</button>
+    <button id="btn-left">◀</button>
+    <button id="btn-right">▶</button>
+    <button id="btn-down">▼</button>
+
+  </div>
+
+  <button id="btn-action">
+    PLAKAT<br>
+    AUFHÄNGEN
+  </button>
+
+</div>
+
+<!-- =======================================================
+     START
+======================================================= -->
+
+<div id="overlay-start" class="overlay">
+
+  <h1>
+    PLAKAT-EINSATZ<br>
+    ACHIM-WEST
+  </h1>
+
+  <h2>
+    INES ANNA BRÄUER · LISTENPLATZ 6
+  </h2>
+
+  <p>
+    Kommunalwahl in Achim
+  </p>
+
+  <ul>
+
+    <li>
+      Bewege Ines mit Pfeiltasten, WASD oder dem Steuerkreuz.
+    </li>
+
+    <li>
+      Stelle dich an eine Laterne und drücke
+      <b>AUFHÄNGEN</b>.
+    </li>
+
+    <li>
+      Triff den grünen Bereich:
+      <b style="color:#8cf09d">mindestens 2,25 m</b>.
+    </li>
+
+    <li>
+      Saboteure versuchen, fertige Plakate abzureißen.
+    </li>
+
+    <li>
+      Sind die Plakate leer, zurück zum
+      <b>LISTE-6-Wagen</b>.
+    </li>
+
+  </ul>
+
+  <p>
+    90 Sekunden · möglichst viele Plakate legal und dauerhaft hängen!
+  </p>
+
+  <button id="btn-start">
+    SPIEL STARTEN
+  </button>
+
+</div>
+
+<!-- =======================================================
+     GAME OVER
+======================================================= -->
+
+<div id="overlay-gameover" class="overlay hidden">
+
+  <h1>
+    EINSATZ BEENDET
+  </h1>
+
+  <p>
+    Punkte
+  </p>
+
+  <div
+    class="badge"
+    id="final-score">
+    0
+  </div>
+
+  <p id="final-high"></p>
+
+  <button id="btn-restart">
+    NOCHMAL SPIELEN
+  </button>
+
+</div>
+
+</div>
+</div>
+
+<script>
+(function () {
+
+"use strict";
+
+/* ==========================================================
+   CANVAS
+========================================================== */
+
+var canvas = document.getElementById("game");
+var ctx = canvas.getContext("2d");
+
+ctx.imageSmoothingEnabled = false;
+
+var W = canvas.width;
+var H = canvas.height;
+
+var PS = 4;
+
+
+/* ==========================================================
+   COLORS
+========================================================== */
+
+var PLAYER_PALETTE = {
+
+  H: "#f4d94a",
+  F: "#f6c99a",
+  S: "#386fe8",
+  P: "#343a50",
+  B: "#191b22"
+
+};
+
+var SABO_PALETTE = {
+
+  C: "#555963",
+  K: "#181a20",
+  B: "#0b0c10"
+
+};
+
+
+/* ==========================================================
+   PLAYER SPRITES
+========================================================== */
+
+var PLAYER_A = [
+
+  "..HHHH..",
+  ".HHHHHH.",
+  ".HFFFFH.",
+  ".HFFFFH.",
+
+  ".HSSSSH.",
+  "..SSSS..",
+  "..SSSS..",
+  "..SSSS..",
+
+  "..PPPP..",
+  "..PPPP..",
+
+  ".BB..BB.",
+  "........"
+
+];
+
+var PLAYER_B = [
+
+  "..HHHH..",
+  ".HHHHHH.",
+  ".HFFFFH.",
+  ".HFFFFH.",
+
+  ".HSSSSH.",
+  "..SSSS..",
+  "..SSSS..",
+  "..SSSS..",
+
+  "..PPPP..",
+  ".PP..PP.",
+
+  "BB....BB",
+  "........"
+
+];
+
+
+/* ==========================================================
+   SABOTEUR SPRITES
+========================================================== */
+
+var SABO_A = [
+
+  "..CCCC..",
+  ".CCCCCC.",
+  ".CKKKKC.",
+  ".CKKKKC.",
+
+  "..CCCC..",
+  "..CCCC..",
+  "..CCCC..",
+  "..CCCC..",
+
+  "..CCCC..",
+  ".CC..CC.",
+
+  ".BB..BB.",
+  "........"
+
+];
+
+var SABO_B = [
+
+  "..CCCC..",
+  ".CCCCCC.",
+  ".CKKKKC.",
+  ".CKKKKC.",
+
+  "..CCCC..",
+  "..CCCC..",
+  "..CCCC..",
+  "..CCCC..",
+
+  "..CCCC..",
+  "..CC..CC",
+
+  "BB....BB",
+  "........"
+
+];
+
+
+/* ==========================================================
+   SPRITE DRAW
+========================================================== */
+
+function drawSprite(rows, palette, px, py) {
+
+  for (var r = 0; r < rows.length; r++) {
+
+    var row = rows[r];
+
+    for (var c = 0; c < row.length; c++) {
+
+      var ch = row[c];
+
+      if (ch === ".") {
+        continue;
+      }
+
+      ctx.fillStyle = palette[ch] || "#ffffff";
+
+      ctx.fillRect(
+        Math.round(px + c * PS),
+        Math.round(py + r * PS),
+        PS,
+        PS
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================================
+   WORLD
+========================================================== */
+
+var GROUND_Y = 250;
+
+var POLE_HEIGHT_PX = 130;
+
+var MAX_METERS = 3.0;
+
+var MIN_LEGAL_METERS = 2.25;
+
+
+/* ==========================================================
+   POLES / LANTERNS
+========================================================== */
+
+var poles = [
+
+  {
+    x: 42,
+    y: 242,
+    hasPoster: false
+  },
+
+  {
+    x: 438,
+    y: 242,
+    hasPoster: false
+  },
+
+  {
+    x: 105,
+    y: 178,
+    hasPoster: false
+  },
+
+  {
+    x: 375,
+    y: 178,
+    hasPoster: false
+  },
+
+  {
+    x: 185,
+    y: 125,
+    hasPoster: false
+  },
+
+  {
+    x: 295,
+    y: 125,
+    hasPoster: false
+  }
+
+];
+
+
+/* ==========================================================
+   CAMPAIGN VAN
+========================================================== */
+
+var van = {
+
+  x: 240,
+  y: 250,
+
+  w: 64,
+  h: 34
+
+};
+
+
+/* ==========================================================
+   PLAYER
+========================================================== */
+
+var player = {
+
+  x: 232,
+  y: 210,
+
+  speed: 120,
+
+  frame: 0,
+  animTimer: 0,
+
+  posters: 3,
+  maxPosters: 3
+
+};
+
+
+/* ==========================================================
+   SABOTEURS
+========================================================== */
+
+var saboteurs = [];
+
+
+function spawnSaboteur() {
+
+  var edge = Math.floor(Math.random() * 4);
+
+  var sx;
+  var sy;
+
+  if (edge === 0) {
+
+    sx = 10;
+    sy = 35 + Math.random() * 200;
+
+  }
+
+  else if (edge === 1) {
+
+    sx = 470;
+    sy = 35 + Math.random() * 200;
+
+  }
+
+  else if (edge === 2) {
+
+    sx = 40 + Math.random() * 400;
+    sy = 25;
+
+  }
+
+  else {
+
+    sx = 40 + Math.random() * 400;
+    sy = 260;
+
+  }
+
+  saboteurs.push({
+
+    x: sx,
+    y: sy,
+
+    speed: 58,
+
+    frame: 0,
+    animTimer: 0,
+
+    state: "seek",
+
+    target: null,
+
+    fleeTimer: 0,
+
+    cooldownTimer: 0
+
+  });
+
+}
+
+
+/* ==========================================================
+   FLOATING TEXT
+========================================================== */
+
+var floaters = [];
+
+
+function addFloater(x, y, text, color) {
+
+  floaters.push({
+
+    x: x,
+    y: y,
+
+    text: text,
+    color: color,
+
+    life: 1.2,
+    maxLife: 1.2
+
+  });
+
+}
+
+
+/* ==========================================================
+   GAME STATE
+========================================================== */
+
+var state = "start";
+
+var score = 0;
+
+var sessionHigh =
+  Number(localStorage.getItem("ines_anna_highscore") || 0);
+
+var timeLeft = 90;
+
+var hangingAt = null;
+
+var thirdSaboteurAdded = false;
+
+
+/* ==========================================================
+   INPUT
+========================================================== */
+
+var keys = {};
+
+var touchDir = {
+
+  up: false,
+  down: false,
+  left: false,
+  right: false
+
+};
+
+var actionQueued = false;
+
+
+/* ==========================================================
+   KEYBOARD
+========================================================== */
+
+window.addEventListener("keydown", function (e) {
+
+  keys[e.code] = true;
+
+  if (e.code === "Space") {
+
+    e.preventDefault();
+
+    if (!e.repeat) {
+
+      actionQueued = true;
+
+    }
+
+  }
+
+  if (
+    [
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight"
+    ].indexOf(e.code) !== -1
+  ) {
+
+    e.preventDefault();
+
+  }
+
+});
+
+
+window.addEventListener("keyup", function (e) {
+
+  keys[e.code] = false;
+
+});
+
+
+/* ==========================================================
+   TOUCH DIRECTION BUTTONS
+   iOS / SAFARI SAFE
+========================================================== */
+
+function bindHold(id, direction) {
+
+  var el = document.getElementById(id);
+
+
+  function press(e) {
+
+    e.preventDefault();
+
+    touchDir[direction] = true;
+
+    el.classList.add("active");
+
+
+    if (el.setPointerCapture) {
+
+      try {
+
+        el.setPointerCapture(e.pointerId);
+
+      }
+
+      catch (_) {}
+
+    }
+
+  }
+
+
+  function release(e) {
+
+    e.preventDefault();
+
+    touchDir[direction] = false;
+
+    el.classList.remove("active");
+
+  }
+
+
+  el.addEventListener(
+    "pointerdown",
+    press,
+    { passive: false }
+  );
+
+  el.addEventListener(
+    "pointerup",
+    release,
+    { passive: false }
+  );
+
+  el.addEventListener(
+    "pointercancel",
+    release,
+    { passive: false }
+  );
+
+  el.addEventListener(
+    "lostpointercapture",
+    release,
+    { passive: false }
+  );
+
+}
+
+
+bindHold("btn-up", "up");
+bindHold("btn-down", "down");
+bindHold("btn-left", "left");
+bindHold("btn-right", "right");
+
+
+/* ==========================================================
+   ACTION BUTTON
+========================================================== */
+
+var actionButton =
+  document.getElementById("btn-action");
+
+
+actionButton.addEventListener(
+  "pointerdown",
+  function (e) {
+
+    e.preventDefault();
+
+    actionQueued = true;
+
+    actionButton.classList.add("active");
+
+
+    if (actionButton.setPointerCapture) {
+
+      try {
+
+        actionButton.setPointerCapture(
+          e.pointerId
+        );
+
+      }
+
+      catch (_) {}
+
+    }
+
+  },
+  { passive: false }
+);
+
+
+function releaseAction(e) {
+
+  e.preventDefault();
+
+  actionButton.classList.remove("active");
+
+}
+
+
+actionButton.addEventListener(
+  "pointerup",
+  releaseAction,
+  { passive: false }
+);
+
+actionButton.addEventListener(
+  "pointercancel",
+  releaseAction,
+  { passive: false }
+);
+
+actionButton.addEventListener(
+  "lostpointercapture",
+  releaseAction,
+  { passive: false }
+);
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+document
+  .getElementById("btn-start")
+  .addEventListener("click", startGame);
+
+
+document
+  .getElementById("btn-restart")
+  .addEventListener("click", startGame);
+
+
+/* ==========================================================
+   UTILITIES
+========================================================== */
+
+function dist(ax, ay, bx, by) {
+
+  var dx = ax - bx;
+  var dy = ay - by;
+
+  return Math.sqrt(
+    dx * dx +
+    dy * dy
+  );
+
+}
+
+
+function playerCenter() {
+
+  return {
+
+    x: player.x + 16,
+
+    y: player.y + 42
+
+  };
+
+}
+
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+function resetGame() {
+
+  poles.forEach(function (p) {
+
+    p.hasPoster = false;
+
+  });
+
+
+  saboteurs = [];
+
+  spawnSaboteur();
+  spawnSaboteur();
+
+
+  thirdSaboteurAdded = false;
+
+
+  player.x = 232;
+  player.y = 210;
+
+  player.posters =
+    player.maxPosters;
+
+
+  player.frame = 0;
+  player.animTimer = 0;
+
+
+  floaters = [];
+
+  hangingAt = null;
+
+  score = 0;
+
+  timeLeft = 90;
+
+}
+
+
+/* ==========================================================
+   START GAME
+========================================================== */
+
+function startGame() {
+
+  resetGame();
+
+  state = "playing";
+
+  document
+    .getElementById("overlay-start")
+    .classList.add("hidden");
+
+  document
+    .getElementById("overlay-gameover")
+    .classList.add("hidden");
+
+}
+
+
+/* ==========================================================
+   GAME OVER
+========================================================== */
+
+function endGame() {
+
+  state = "gameover";
+
+
+  if (score > sessionHigh) {
+
+    sessionHigh = score;
+
+    localStorage.setItem(
+      "ines_anna_highscore",
+      sessionHigh
+    );
+
+  }
+
+
+  document
+    .getElementById("final-score")
+    .textContent = score;
+
+
+  document
+    .getElementById("final-high")
+    .textContent =
+      "Highscore: " +
+      sessionHigh;
+
+
+  document
+    .getElementById("overlay-gameover")
+    .classList.remove("hidden");
+
+}
+
+
+/* ==========================================================
+   ACTION
+========================================================== */
+
+function tryAction() {
+
+  var pc = playerCenter();
+
+
+  /* --------------------------------------------------------
+     HEIGHT MEASUREMENT
+  -------------------------------------------------------- */
+
+  if (hangingAt !== null) {
+
+    var pole =
+      poles[hangingAt.poleIndex];
+
+
+    var pos =
+      (Math.sin(
+        hangingAt.elapsed * 6
+      ) + 1) / 2;
+
+
+    var heightM =
+      pos * MAX_METERS;
+
+
+    if (heightM >= MIN_LEGAL_METERS) {
+
+      pole.hasPoster = true;
+
+      player.posters--;
+
+
+      var perfect =
+        heightM >= 2.85;
+
+
+      score += perfect ? 20 : 15;
+
+
+      addFloater(
+        pole.x,
+        pole.y - POLE_HEIGHT_PX,
+        perfect
+          ? "+20 PERFEKT!"
+          : "+15 AUFGEHÄNGT!",
+        "#8cf09d"
+      );
+
+    }
+
+    else {
+
+      player.posters--;
+
+
+      addFloater(
+        pole.x,
+        pole.y - POLE_HEIGHT_PX,
+        "ZU NIEDRIG! " +
+        heightM.toFixed(2) +
+        "m",
+        "#ff7777"
+      );
+
+    }
+
+
+    hangingAt = null;
+
+    return;
+
+  }
+
+
+  /* --------------------------------------------------------
+     POLE
+  -------------------------------------------------------- */
+
+  for (
+    var i = 0;
+    i < poles.length;
+    i++
+  ) {
+
+    var p = poles[i];
+
+
+    if (
+      !p.hasPoster &&
+      dist(
+        pc.x,
+        pc.y,
+        p.x,
+        p.y
+      ) < 34
+    ) {
+
+      if (player.posters > 0) {
+
+        hangingAt = {
+
+          poleIndex: i,
+
+          elapsed: 0
+
+        };
+
+      }
+
+      else {
+
+        addFloater(
+          p.x,
+          p.y - 35,
+          "KEINE PLAKATE!",
+          "#ffd23f"
+        );
+
+      }
+
+      return;
+
+    }
+
+  }
+
+
+  /* --------------------------------------------------------
+     VAN
+  -------------------------------------------------------- */
+
+  if (
+    dist(
+      pc.x,
+      pc.y,
+      van.x,
+      van.y
+    ) < 45
+  ) {
+
+    if (
+      player.posters <
+      player.maxPosters
+    ) {
+
+      player.posters =
+        player.maxPosters;
+
+
+      addFloater(
+        van.x,
+        van.y - 45,
+        "NACHGELADEN!",
+        "#83d4ff"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================================
+   PLAYER UPDATE
+========================================================== */
+
+function updatePlayer(dt) {
+
+  var up =
+    keys["ArrowUp"] ||
+    keys["KeyW"] ||
+    touchDir.up;
+
+
+  var down =
+    keys["ArrowDown"] ||
+    keys["KeyS"] ||
+    touchDir.down;
+
+
+  var left =
+    keys["ArrowLeft"] ||
+    keys["KeyA"] ||
+    touchDir.left;
+
+
+  var right =
+    keys["ArrowRight"] ||
+    keys["KeyD"] ||
+    touchDir.right;
+
+
+  var vx =
+    (right ? 1 : 0) -
+    (left ? 1 : 0);
+
+
+  var vy =
+    (down ? 1 : 0) -
+    (up ? 1 : 0);
+
+
+  if (vx !== 0 && vy !== 0) {
+
+    vx *= 0.7071;
+    vy *= 0.7071;
+
+  }
+
+
+  player.x +=
+    vx *
+    player.speed *
+    dt;
+
+
+  player.y +=
+    vy *
+    player.speed *
+    dt;
+
+
+  player.x =
+    Math.max(
+      3,
+      Math.min(
+        W - 35,
+        player.x
+      )
+    );
+
+
+  player.y =
+    Math.max(
+      30,
+      Math.min(
+        H - 50,
+        player.y
+      )
+    );
+
+
+  if (vx !== 0 || vy !== 0) {
+
+    player.animTimer += dt;
+
+
+    if (player.animTimer > 0.16) {
+
+      player.frame =
+        1 - player.frame;
+
+      player.animTimer = 0;
+
+    }
+
+  }
+
+  else {
+
+    player.frame = 0;
+
+  }
+
+
+  if (hangingAt !== null) {
+
+    var pole =
+      poles[hangingAt.poleIndex];
+
+    var pc =
+      playerCenter();
+
+
+    if (
+      dist(
+        pc.x,
+        pc.y,
+        pole.x,
+        pole.y
+      ) > 60
+    ) {
+
+      hangingAt = null;
+
+    }
+
+    else {
+
+      hangingAt.elapsed += dt;
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================================
+   SABOTEURS
+========================================================== */
+
+function updateSaboteurs(dt) {
+
+  var pc =
+    playerCenter();
+
+
+  var GUARD_RADIUS = 55;
+
+
+  saboteurs.forEach(function (s) {
+
+    s.animTimer += dt;
+
+
+    if (s.animTimer > 0.2) {
+
+      s.frame =
+        1 - s.frame;
+
+      s.animTimer = 0;
+
+    }
+
+
+    /* PLAYER SCARES SABOTEUR */
+
+    if (
+      s.state !== "flee" &&
+      dist(
+        pc.x,
+        pc.y,
+        s.x,
+        s.y
+      ) < 23
+    ) {
+
+      s.state = "flee";
+
+      s.fleeTimer = 2.0;
+
+      s.target = null;
+
+      score += 2;
+
+
+      addFloater(
+        s.x,
+        s.y - 30,
+        "VERSCHEUCHT +2",
+        "#83d4ff"
+      );
+
+    }
+
+
+    /* FLEE */
+
+    if (s.state === "flee") {
+
+      var dx =
+        s.x - pc.x;
+
+      var dy =
+        s.y - pc.y;
+
+      var len =
+        Math.sqrt(
+          dx * dx +
+          dy * dy
+        ) || 1;
+
+
+      s.x +=
+        (dx / len) *
+        s.speed *
+        1.5 *
+        dt;
+
+
+      s.y +=
+        (dy / len) *
+        s.speed *
+        1.5 *
+        dt;
+
+
+      s.fleeTimer -= dt;
+
+
+      if (
+        s.fleeTimer <= 0
+      ) {
+
+        s.state = "seek";
+
+      }
+
+    }
+
+
+    /* SEEK */
+
+    else {
+
+      if (s.target === null) {
+
+        var candidates = [];
+
+
+        for (
+          var i = 0;
+          i < poles.length;
+          i++
+        ) {
+
+          if (
+            poles[i].hasPoster
+          ) {
+
+            candidates.push(i);
+
+          }
+
+        }
+
+
+        if (
+          candidates.length > 0
+        ) {
+
+          s.target =
+            candidates[
+              Math.floor(
+                Math.random() *
+                candidates.length
+              )
+            ];
+
+        }
+
+        else {
+
+          s.x +=
+            (Math.random() - 0.5) *
+            20 *
+            dt;
+
+          s.y +=
+            (Math.random() - 0.5) *
+            20 *
+            dt;
+
+        }
+
+      }
+
+
+      if (s.target !== null) {
+
+        var target =
+          poles[s.target];
+
+
+        if (!target.hasPoster) {
+
+          s.target = null;
+
+        }
+
+        else {
+
+          var dx2 =
+            target.x - s.x;
+
+          var dy2 =
+            target.y - s.y;
+
+          var len2 =
+            Math.sqrt(
+              dx2 * dx2 +
+              dy2 * dy2
+            ) || 1;
+
+
+          if (len2 > 8) {
+
+            s.x +=
+              (dx2 / len2) *
+              s.speed *
+              dt;
+
+
+            s.y +=
+              (dy2 / len2) *
+              s.speed *
+              dt;
+
+          }
+
+          else {
+
+            if (
+              dist(
+                pc.x,
+                pc.y,
+                target.x,
+                target.y
+              ) > GUARD_RADIUS
+            ) {
+
+              target.hasPoster =
+                false;
+
+
+              score =
+                Math.max(
+                  0,
+                  score - 10
+                );
+
+
+              addFloater(
+                target.x,
+                target.y -
+                  POLE_HEIGHT_PX,
+                "PLAKAT ABGERISSEN -10",
+                "#ff7777"
+              );
+
+
+              s.target = null;
+
+            }
+
+            else {
+
+              s.state = "flee";
+
+              s.fleeTimer = 1.5;
+
+              s.target = null;
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+    s.x =
+      Math.max(
+        7,
+        Math.min(
+          W - 7,
+          s.x
+        )
+      );
+
+
+    s.y =
+      Math.max(
+        28,
+        Math.min(
+          H - 7,
+          s.y
+        )
+      );
+
+  });
+
+}
+
+
+/* ==========================================================
+   FLOATERS
+========================================================== */
+
+function updateFloaters(dt) {
+
+  for (
+    var i = floaters.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    floaters[i].life -= dt;
+
+    floaters[i].y -=
+      20 * dt;
+
+
+    if (
+      floaters[i].life <= 0
+    ) {
+
+      floaters.splice(i, 1);
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================================
+   MAIN UPDATE
+========================================================== */
+
+function update(dt) {
+
+  if (
+    state !== "playing"
+  ) {
+
+    return;
+
+  }
+
+
+  timeLeft -= dt;
+
+
+  if (
+    timeLeft <= 0
+  ) {
+
+    timeLeft = 0;
+
+    updateFloaters(dt);
+
+    endGame();
+
+    return;
+
+  }
+
+
+  if (
+    !thirdSaboteurAdded &&
+    90 - timeLeft > 45
+  ) {
+
+    spawnSaboteur();
+
+    thirdSaboteurAdded = true;
+
+  }
+
+
+  updatePlayer(dt);
+
+  updateSaboteurs(dt);
+
+  updateFloaters(dt);
+
+
+  if (actionQueued) {
+
+    tryAction();
+
+    actionQueued = false;
+
+  }
+
+
+  document
+    .getElementById("hud-time")
+    .textContent =
+      Math.ceil(timeLeft);
+
+
+  document
+    .getElementById("hud-score")
+    .textContent =
+      score;
+
+
+  document
+    .getElementById("hud-posters")
+    .textContent =
+      player.posters +
+      "/" +
+      player.maxPosters;
+
+
+  document
+    .getElementById("hud-high")
+    .textContent =
+      sessionHigh;
+
+}
+
+
+/* ==========================================================
+   BACKGROUND
+========================================================== */
+
+function drawBackground() {
+
+  /* GRASS */
+
+  ctx.fillStyle =
+    "#72b95d";
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+
+  /* SKY */
+
+  ctx.fillStyle =
+    "#82d2ef";
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    48
+  );
+
+
+  /* CLOUDS */
+
+  ctx.fillStyle =
+    "#cfeef7";
+
+  ctx.fillRect(
+    35,
+    13,
+    40,
+    6
+  );
+
+  ctx.fillRect(
+    50,
+    8,
+    22,
+    6
+  );
+
+
+  ctx.fillRect(
+    330,
+    20,
+    48,
+    6
+  );
+
+
+  /* BUILDINGS */
+
+  for (
+    var i = 0;
+    i < 12;
+    i++
+  ) {
+
+    var bx =
+      i * 45;
+
+    ctx.fillStyle =
+      i % 2
+        ? "#687488"
+        : "#596579";
+
+
+    ctx.fillRect(
+      bx,
+      17,
+      28,
+      22
+    );
+
+
+    ctx.fillStyle =
+      "#f5d878";
+
+
+    for (
+      var j = 0;
+      j < 3;
+      j++
+    ) {
+
+      ctx.fillRect(
+        bx + 5 + j * 8,
+        22,
+        4,
+        5
+      );
+
+    }
+
+  }
+
+
+  /* SIDEWALK */
+
+  ctx.fillStyle =
+    "#bcb8aa";
+
+  ctx.fillRect(
+    0,
+    48,
+    W,
+    8
+  );
+
+
+  /* STREET */
+
+  ctx.fillStyle =
+    "#656a72";
+
+  ctx.fillRect(
+    0,
+    56,
+    W,
+    106
+  );
+
+
+  /* CURB */
+
+  ctx.fillStyle =
+    "#d2cec0";
+
+  ctx.fillRect(
+    0,
+    162,
+    W,
+    6
+  );
+
+
+  /* LOWER AREA */
+
+  ctx.fillStyle =
+    "#555a61";
+
+  ctx.fillRect(
+    0,
+    168,
+    W,
+    132
+  );
+
+
+  /* ROAD MARKING */
+
+  ctx.strokeStyle =
+    "#e5d24c";
+
+  ctx.lineWidth = 2;
+
+  ctx.setLineDash([
+    12,
+    9
+  ]);
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    232
+  );
+
+  ctx.lineTo(
+    W,
+    232
+  );
+
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+
+
+  /* STREET SHADOWS */
+
+  ctx.fillStyle =
+    "rgba(0,0,0,.08)";
+
+  for (
+    var k = 0;
+    k < 7;
+    k++
+  ) {
+
+    ctx.fillRect(
+      k * 75,
+      80,
+      55,
+      4
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   CAMPAIGN VAN
+========================================================== */
+
+function drawVan() {
+
+  var vx =
+    van.x -
+    van.w / 2;
+
+  var vy =
+    van.y -
+    van.h;
+
+
+  /* SHADOW */
+
+  ctx.fillStyle =
+    "rgba(0,0,0,.25)";
+
+  ctx.fillRect(
+    vx - 2,
+    vy + van.h,
+    van.w + 4,
+    5
+  );
+
+
+  /* BODY */
+
+  ctx.fillStyle =
+    "#2f6fed";
+
+  ctx.fillRect(
+    vx,
+    vy,
+    van.w,
+    van.h
+  );
+
+
+  /* WINDOWS */
+
+  ctx.fillStyle =
+    "#dfeaff";
+
+  ctx.fillRect(
+    vx + 8,
+    vy + 6,
+    18,
+    11
+  );
+
+  ctx.fillRect(
+    vx + 30,
+    vy + 6,
+    23,
+    11
+  );
+
+
+  /* YELLOW STRIPE */
+
+  ctx.fillStyle =
+    "#ffd23f";
+
+  ctx.fillRect(
+    vx,
+    vy + 19,
+    van.w,
+    4
+  );
+
+
+  /* TEXT */
+
+  ctx.fillStyle =
+    "#ffffff";
+
+  ctx.font =
+    "bold 7px monospace";
+
+  ctx.textAlign =
+    "center";
+
+  ctx.fillText(
+    "LISTE 6",
+    van.x,
+    vy + 31
+  );
+
+
+  /* WHEELS */
+
+  ctx.fillStyle =
+    "#181b20";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    vx + 11,
+    vy + van.h,
+    6,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+    vx + van.w - 11,
+    vy + van.h,
+    6,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+}
+
+
+/* ==========================================================
+   LANTERN / POSTER
+========================================================== */
+
+function drawPole(
+  pole,
+  idx
+) {
+
+  var topY =
+    pole.y -
+    POLE_HEIGHT_PX;
+
+
+  /* POLE SHADOW */
+
+  ctx.fillStyle =
+    "rgba(0,0,0,.18)";
+
+  ctx.fillRect(
+    pole.x + 3,
+    topY,
+    6,
+    POLE_HEIGHT_PX
+  );
+
+
+  /* POLE */
+
+  ctx.fillStyle =
+    "#333943";
+
+  ctx.fillRect(
+    pole.x - 3,
+    topY,
+    6,
+    POLE_HEIGHT_PX
+  );
+
+
+  /* LAMP HEAD */
+
+  ctx.fillStyle =
+    "#242831";
+
+  ctx.fillRect(
+    pole.x - 7,
+    topY - 3,
+    14,
+    5
+  );
+
+
+  ctx.fillStyle =
+    "#d5d9dc";
+
+  ctx.fillRect(
+    pole.x - 5,
+    topY - 8,
+    10,
+    5
+  );
+
+
+  /* ========================================================
+     POSTER
+  ======================================================== */
+
+  if (pole.hasPoster) {
+
+    var px =
+      pole.x - 19;
+
+    var py =
+      topY - 5;
+
+    var pw = 38;
+    var ph = 48;
+
+
+    /* SHADOW */
+
+    ctx.fillStyle =
+      "#22252b";
+
+    ctx.fillRect(
+      px + 3,
+      py + 3,
+      pw,
+      ph
+    );
+
+
+    /* PAPER */
+
+    ctx.fillStyle =
+      "#ffffff";
+
+    ctx.fillRect(
+      px,
+      py,
+      pw,
+      ph
+    );
+
+
+    /* BLUE HEADER */
+
+    ctx.fillStyle =
+      "#2f6fed";
+
+    ctx.fillRect(
+      px,
+      py,
+      pw,
+      17
+    );
+
+
+    /* YELLOW STRIPE */
+
+    ctx.fillStyle =
+      "#ffd23f";
+
+    ctx.fillRect(
+      px,
+      py + 17,
+      pw,
+      4
+    );
+
+
+    /* INES */
+
+    ctx.fillStyle =
+      "#ffffff";
+
+    ctx.font =
+      "bold 7px monospace";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.fillText(
+      "INES",
+      pole.x,
+      py + 12
+    );
+
+
+    /* NAME */
+
+    ctx.fillStyle =
+      "#20242c";
+
+    ctx.font =
+      "bold 5px monospace";
+
+    ctx.fillText(
+      "ANNA",
+      pole.x,
+      py + 29
+    );
+
+    ctx.fillText(
+      "BRÄUER",
+      pole.x,
+      py + 36
+    );
+
+
+    /* LIST 6 */
+
+    ctx.fillStyle =
+      "#2f6fed";
+
+    ctx.font =
+      "bold 8px monospace";
+
+    ctx.fillText(
+      "LISTE 6",
+      pole.x,
+      py + 45
+    );
+
+
+    /* BORDER */
+
+    ctx.strokeStyle =
+      "#20242c";
+
+    ctx.lineWidth = 1;
+
+    ctx.strokeRect(
+      px,
+      py,
+      pw,
+      ph
+    );
+
+  }
+
+
+  /* ========================================================
+     HEIGHT METER
+  ======================================================== */
+
+  if (
+    hangingAt !== null &&
+    hangingAt.poleIndex === idx
+  ) {
+
+    var greenStart =
+      MIN_LEGAL_METERS /
+      MAX_METERS;
+
+
+    /*
+      EXACTLY 2.25 m:
+      everything ABOVE the 2.25m position is green.
+    */
+
+    ctx.fillStyle =
+      "rgba(95,240,125,.28)";
+
+    ctx.fillRect(
+      pole.x - 12,
+      topY,
+      24,
+      POLE_HEIGHT_PX *
+      (1 - greenStart)
+    );
+
+
+    /* 2.25m LINE */
+
+    var legalY =
+      pole.y -
+      greenStart *
+      POLE_HEIGHT_PX;
+
+
+    ctx.strokeStyle =
+      "#8cf09d";
+
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      pole.x - 18,
+      legalY
+    );
+
+    ctx.lineTo(
+      pole.x + 18,
+      legalY
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+      "#8cf09d";
+
+    ctx.font =
+      "6px monospace";
+
+    ctx.textAlign =
+      "left";
+
+    ctx.fillText(
+      "2,25m",
+      pole.x + 20,
+      legalY + 2
+    );
+
+
+    /* MOVING MARKER */
+
+    var pos =
+      (Math.sin(
+        hangingAt.elapsed * 6
+      ) + 1) / 2;
+
+
+    var heightM =
+      pos *
+      MAX_METERS;
+
+
+    var markerY =
+      pole.y -
+      pos *
+      POLE_HEIGHT_PX;
+
+
+    ctx.fillStyle =
+      heightM >= MIN_LEGAL_METERS
+        ? "#ffd23f"
+        : "#ff6767";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+      pole.x,
+      markerY,
+      6,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* DIGITAL DISPLAY */
+
+    ctx.fillStyle =
+      "#10131a";
+
+    ctx.fillRect(
+      pole.x - 25,
+      topY - 25,
+      50,
+      14
+    );
+
+
+    ctx.fillStyle =
+      heightM >= MIN_LEGAL_METERS
+        ? "#8cf09d"
+        : "#ff9999";
+
+
+    ctx.font =
+      "7px monospace";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.fillText(
+      heightM.toFixed(2) +
+      " m",
+      pole.x,
+      topY - 15
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   FLOATERS
+========================================================== */
+
+function drawFloaters() {
+
+  ctx.textAlign =
+    "center";
+
+  ctx.font =
+    "7px monospace";
+
+
+  floaters.forEach(function (f) {
+
+    ctx.globalAlpha =
+      Math.max(
+        0,
+        f.life / f.maxLife
+      );
+
+
+    ctx.fillStyle =
+      f.color;
+
+
+    ctx.fillText(
+      f.text,
+      f.x,
+      f.y
+    );
+
+
+    ctx.globalAlpha = 1;
+
+  });
+
+}
+
+
+/* ==========================================================
+   RENDER
+========================================================== */
+
+function render() {
+
+  drawBackground();
+
+
+  poles.forEach(
+    drawPole
+  );
+
+
+  drawVan();
+
+
+  saboteurs.forEach(
+    function (s) {
+
+      drawSprite(
+        s.frame === 0
+          ? SABO_A
+          : SABO_B,
+
+        SABO_PALETTE,
+
+        s.x - 16,
+        s.y - 48
+      );
+
+    }
+  );
+
+
+  /* PLAYER SHADOW */
+
+  ctx.fillStyle =
+    "rgba(0,0,0,.22)";
+
+  ctx.fillRect(
+    player.x + 3,
+    player.y + 42,
+    26,
+    5
+  );
+
+
+  /* PLAYER */
+
+  drawSprite(
+    player.frame === 0
+      ? PLAYER_A
+      : PLAYER_B,
+
+    PLAYER_PALETTE,
+
+    player.x,
+    player.y
+  );
+
+
+  drawFloaters();
+
+}
+
+
+/* ==========================================================
+   MAIN LOOP
+========================================================== */
+
+var lastTs = null;
+
+
+function loop(ts) {
+
+  if (lastTs === null) {
+
+    lastTs = ts;
+
+  }
+
+
+  var dt =
+    Math.min(
+      (ts - lastTs) / 1000,
+      0.05
+    );
+
+
+  lastTs = ts;
+
+
+  update(dt);
+
+  render();
+
+
+  requestAnimationFrame(
+    loop
+  );
+
+}
+
+
+requestAnimationFrame(loop);
+
+})();
+</script>
+
+</body>
+</html>
