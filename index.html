@@ -411,7 +411,7 @@ canvas {
     </li>
 
     <li>
-      Saboteure versuchen, fertige Plakate abzureißen.
+      Saboteure versuchen, fertige Plakate abzureißen. Remple sie an, um sie für 3 Sekunden zu vertreiben!
     </li>
 
     <li>
@@ -582,7 +582,7 @@ var SABO_B = [
   ".CKKKKC.",
 
   "..CCCC..",
-  "..CCCC..",
+  "..CCCCCC.",
   "..CCCC..",
   "..CCCC..",
 
@@ -729,45 +729,36 @@ var player = {
 var saboteurs = [];
 
 
-function spawnSaboteur() {
-
+function getSpawnPosition() {
   var edge = Math.floor(Math.random() * 4);
-
-  var sx;
-  var sy;
+  var sx, sy;
 
   if (edge === 0) {
-
     sx = 10;
     sy = 35 + Math.random() * 200;
-
-  }
-
-  else if (edge === 1) {
-
+  } else if (edge === 1) {
     sx = 470;
     sy = 35 + Math.random() * 200;
-
-  }
-
-  else if (edge === 2) {
-
+  } else if (edge === 2) {
     sx = 40 + Math.random() * 400;
     sy = 25;
-
-  }
-
-  else {
-
+  } else {
     sx = 40 + Math.random() * 400;
     sy = 260;
-
   }
+
+  return { x: sx, y: sy };
+}
+
+
+function spawnSaboteur() {
+
+  var pos = getSpawnPosition();
 
   saboteurs.push({
 
-    x: sx,
-    y: sy,
+    x: pos.x,
+    y: pos.y,
 
     speed: 58,
 
@@ -1493,30 +1484,19 @@ function updatePlayer(dt) {
 
 function updateSaboteurs(dt) {
 
-  var pc =
-    playerCenter();
-
-
+  var pc = playerCenter();
   var GUARD_RADIUS = 55;
-
 
   saboteurs.forEach(function (s) {
 
     s.animTimer += dt;
 
-
     if (s.animTimer > 0.2) {
-
-      s.frame =
-        1 - s.frame;
-
+      s.frame = 1 - s.frame;
       s.animTimer = 0;
-
     }
 
-
     /* PLAYER SCARES SABOTEUR */
-
     if (
       s.state !== "flee" &&
       dist(
@@ -1526,242 +1506,103 @@ function updateSaboteurs(dt) {
         s.y
       ) < 23
     ) {
-
       s.state = "flee";
-
-      s.fleeTimer = 2.0;
-
+      s.fleeTimer = 3.0; // Flee duration updated to 3.0s
       s.target = null;
 
-      score += 2;
-
+      score += 5; // Increased bump reward bonus
 
       addFloater(
         s.x,
         s.y - 30,
-        "VERSCHEUCHT +2",
+        "VERSCHEUCHT +5",
         "#83d4ff"
       );
-
     }
 
-
     /* FLEE */
-
     if (s.state === "flee") {
+      var dx = s.x - pc.x;
+      var dy = s.y - pc.y;
 
-      var dx =
-        s.x - pc.x;
+      var len = Math.sqrt(dx * dx + dy * dy) || 1;
 
-      var dy =
-        s.y - pc.y;
-
-      var len =
-        Math.sqrt(
-          dx * dx +
-          dy * dy
-        ) || 1;
-
-
-      s.x +=
-        (dx / len) *
-        s.speed *
-        1.5 *
-        dt;
-
-
-      s.y +=
-        (dy / len) *
-        s.speed *
-        1.5 *
-        dt;
-
+      s.x += (dx / len) * s.speed * 1.6 * dt;
+      s.y += (dy / len) * s.speed * 1.6 * dt;
 
       s.fleeTimer -= dt;
 
+      // Check if enemy hit border or flee timer expired -> Despawn and Respawn at Edge
+      var borderReached = s.x <= 7 || s.x >= W - 7 || s.y <= 28 || s.y >= H - 7;
 
-      if (
-        s.fleeTimer <= 0
-      ) {
-
+      if (s.fleeTimer <= 0 || borderReached) {
+        var respawnPos = getSpawnPosition();
+        s.x = respawnPos.x;
+        s.y = respawnPos.y;
         s.state = "seek";
-
+        s.target = null;
       }
-
     }
 
-
     /* SEEK */
-
     else {
-
       if (s.target === null) {
-
         var candidates = [];
 
-
-        for (
-          var i = 0;
-          i < poles.length;
-          i++
-        ) {
-
-          if (
-            poles[i].hasPoster
-          ) {
-
+        for (var i = 0; i < poles.length; i++) {
+          if (poles[i].hasPoster) {
             candidates.push(i);
-
           }
-
         }
 
-
-        if (
-          candidates.length > 0
-        ) {
-
-          s.target =
-            candidates[
-              Math.floor(
-                Math.random() *
-                candidates.length
-              )
-            ];
-
+        if (candidates.length > 0) {
+          s.target = candidates[Math.floor(Math.random() * candidates.length)];
+        } else {
+          s.x += (Math.random() - 0.5) * 20 * dt;
+          s.y += (Math.random() - 0.5) * 20 * dt;
         }
-
-        else {
-
-          s.x +=
-            (Math.random() - 0.5) *
-            20 *
-            dt;
-
-          s.y +=
-            (Math.random() - 0.5) *
-            20 *
-            dt;
-
-        }
-
       }
 
-
       if (s.target !== null) {
-
-        var target =
-          poles[s.target];
-
+        var target = poles[s.target];
 
         if (!target.hasPoster) {
-
           s.target = null;
+        } else {
+          var dx2 = target.x - s.x;
+          var dy2 = target.y - s.y;
 
-        }
-
-        else {
-
-          var dx2 =
-            target.x - s.x;
-
-          var dy2 =
-            target.y - s.y;
-
-          var len2 =
-            Math.sqrt(
-              dx2 * dx2 +
-              dy2 * dy2
-            ) || 1;
-
+          var len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1;
 
           if (len2 > 8) {
+            s.x += (dx2 / len2) * s.speed * dt;
+            s.y += (dy2 / len2) * s.speed * dt;
+          } else {
+            if (dist(pc.x, pc.y, target.x, target.y) > GUARD_RADIUS) {
+              target.hasPoster = false;
 
-            s.x +=
-              (dx2 / len2) *
-              s.speed *
-              dt;
-
-
-            s.y +=
-              (dy2 / len2) *
-              s.speed *
-              dt;
-
-          }
-
-          else {
-
-            if (
-              dist(
-                pc.x,
-                pc.y,
-                target.x,
-                target.y
-              ) > GUARD_RADIUS
-            ) {
-
-              target.hasPoster =
-                false;
-
-
-              score =
-                Math.max(
-                  0,
-                  score - 10
-                );
-
+              score = Math.max(0, score - 10);
 
               addFloater(
                 target.x,
-                target.y -
-                  POLE_HEIGHT_PX,
+                target.y - POLE_HEIGHT_PX,
                 "PLAKAT ABGERISSEN -10",
                 "#ff7777"
               );
 
-
               s.target = null;
-
-            }
-
-            else {
-
+            } else {
               s.state = "flee";
-
-              s.fleeTimer = 1.5;
-
+              s.fleeTimer = 3.0;
               s.target = null;
-
             }
-
           }
-
         }
-
       }
-
     }
 
-
-    s.x =
-      Math.max(
-        7,
-        Math.min(
-          W - 7,
-          s.x
-        )
-      );
-
-
-    s.y =
-      Math.max(
-        28,
-        Math.min(
-          H - 7,
-          s.y
-        )
-      );
+    s.x = Math.max(7, Math.min(W - 7, s.x));
+    s.y = Math.max(28, Math.min(H - 7, s.y));
 
   });
 
@@ -2221,6 +2062,17 @@ function drawVan() {
 
   ctx.fill();
 
+
+  /* VAN REFILL PROMPT INDICATOR */
+
+  var pc = playerCenter();
+  if (dist(pc.x, pc.y, van.x, van.y) < 45 && player.posters < player.maxPosters) {
+    ctx.fillStyle = "#ffd23f";
+    ctx.font = "bold 6px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("AUFHÄNGEN = AUFLADEN", van.x, vy - 6);
+  }
+
 }
 
 
@@ -2647,6 +2499,14 @@ function render() {
         s.x - 16,
         s.y - 48
       );
+
+      /* DRAW FLEE INDICATOR OVER ENEMY HEAD */
+      if (s.state === "flee") {
+        ctx.fillStyle = "#ff5555";
+        ctx.font = "bold 10px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("!", s.x, s.y - 52);
+      }
 
     }
   );
